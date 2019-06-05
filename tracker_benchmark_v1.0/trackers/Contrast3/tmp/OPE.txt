@@ -1,0 +1,21 @@
+{错误使用 <a href="matlab:matlab.internal.language.introspective.errorDocCallback('dlmread', 'D:\MATLAB\toolbox\matlab\iofun\dlmread.m', 62)" style="font-weight:bold">dlmread</a> (<a href="matlab: opentoline('D:\MATLAB\toolbox\matlab\iofun\dlmread.m',62,0)">line 62</a>)
+无法打开文件 './anno/soccer.txt'，因为: No such file or directory
+
+出错 <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main_running', 'D:\MyProject\Matlab\OTB\tracker_benchmark_v1.0\main_running.m', 62)" style="font-weight:bold">main_running</a> (<a href="matlab: opentoline('D:\MyProject\Matlab\OTB\tracker_benchmark_v1.0\main_running.m',62,0)">line 62</a>)
+    rect_anno = dlmread([pathAnno s.name '.txt']);
+} 
+main_running
+{错误使用 <a href="matlab:matlab.internal.language.introspective.errorDocCallback('dlmread', 'D:\MATLAB\toolbox\matlab\iofun\dlmread.m', 62)" style="font-weight:bold">dlmread</a> (<a href="matlab: opentoline('D:\MATLAB\toolbox\matlab\iofun\dlmread.m',62,0)">line 62</a>)
+无法打开文件 './anno/soccer.txt'，因为: No such file or directory
+
+出错 <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main_running', 'D:\MyProject\Matlab\OTB\tracker_benchmark_v1.0\main_running.m', 62)" style="font-weight:bold">main_running</a> (<a href="matlab: opentoline('D:\MyProject\Matlab\OTB\tracker_benchmark_v1.0\main_running.m',62,0)">line 62</a>)
+    rect_anno = dlmread([pathAnno s.name '.txt']);
+} 
+main_running
+{错误使用 <a href="matlab:matlab.internal.language.introspective.errorDocCallback('dlmread', 'D:\MATLAB\toolbox\matlab\iofun\dlmread.m', 62)" style="font-weight:bold">dlmread</a> (<a href="matlab: opentoline('D:\MATLAB\toolbox\matlab\iofun\dlmread.m',62,0)">line 62</a>)
+无法打开文件 './anno/soccer.txt'，因为: No such file or directory
+
+出错 <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main_running', 'D:\MyProject\Matlab\OTB\tracker_benchmark_v1.0\main_running.m', 62)" style="font-weight:bold">main_running</a> (<a href="matlab: opentoline('D:\MyProject\Matlab\OTB\tracker_benchmark_v1.0\main_running.m',62,0)">line 62</a>)
+    rect_anno = dlmread([pathAnno s.name '.txt']);
+} 
+main_running

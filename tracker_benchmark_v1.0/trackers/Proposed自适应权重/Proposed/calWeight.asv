@@ -1,0 +1,39 @@
+function alpha = calWeight(histBg,histObj,cf_response)
+global History;
+% global History1;
+global n_frame;
+%%计算相关滤波的APCE判据
+tmp1 = (max(cf_response(:)) - min(cf_response(:)))^2; 
+tmp2 = mean((cf_response(:) - min(cf_response(:))).^2);
+APCE = tmp1 / tmp2;
+
+
+bg = histBg(:);
+fg = histObj(:);
+
+tmp = bg .* fg;
+bh = sum(tmp.^0.5);
+sim = 1 - (1 - bh)^0.5;
+alpha = 0.0;
+
+if APCE <=15,
+    if sim <=0.55,
+        alpha = 0.5;
+    else 
+        alpha = 0.2;
+    end 
+else 
+    if sim<=0.45,
+        alpha = 0.32;
+    end 
+    if sim>0.45 && sim<0.57,
+        alpha = 0.2;
+    end 
+    if sim>=0.57,
+        alpha = 0;
+    end 
+end  
+History(n_frame) = [sim, APCE, alpha];
+% History1(n_frame) = APCE;
+end
+

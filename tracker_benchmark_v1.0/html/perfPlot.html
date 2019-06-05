@@ -1,0 +1,576 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>perfPlot</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-03-27"><meta name="DC.source" content="perfPlot.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">clear
+close <span class="string">all</span>;
+clc
+
+addpath(<span class="string">'./util'</span>);
+
+attPath = <span class="string">'.\anno\att\'</span>; <span class="comment">% The folder that contains the annotation files for sequence attributes</span>
+
+attName={<span class="string">'illumination variation'</span>	<span class="string">'out-of-plane rotation'</span>	<span class="string">'scale variation'</span>	<span class="string">'occlusion'</span>	<span class="string">'deformation'</span>	<span class="string">'motion blur'</span>	<span class="string">'fast motion'</span>	<span class="string">'in-plane rotation'</span>	<span class="string">'out of view'</span>	<span class="string">'background clutter'</span> <span class="string">'low resolution'</span>};
+
+attFigName={<span class="string">'illumination_variations'</span>	<span class="string">'out-of-plane_rotation'</span>	<span class="string">'scale_variations'</span>	<span class="string">'occlusions'</span>	<span class="string">'deformation'</span>	<span class="string">'blur'</span>	<span class="string">'abrupt_motion'</span>	<span class="string">'in-plane_rotation'</span>	<span class="string">'out-of-view'</span>	<span class="string">'background_clutter'</span> <span class="string">'low_resolution'</span>};
+
+
+plotDrawStyleAll={   struct(<span class="string">'color'</span>,[1,0,0],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,1,0],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,0,1],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,0,0],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%    struct('color',[1,1,0],'lineStyle','-'),...%yellow</span>
+    struct(<span class="string">'color'</span>,[1,0,1],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%pink</span>
+    struct(<span class="string">'color'</span>,[0,1,1],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0.5,0.5,0.5],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%gray-25%</span>
+    struct(<span class="string">'color'</span>,[136,0,21]/255,<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%dark red</span>
+    struct(<span class="string">'color'</span>,[255,127,39]/255,<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%orange</span>
+    struct(<span class="string">'color'</span>,[0,162,232]/255,<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%Turquoise</span>
+    struct(<span class="string">'color'</span>,[163,73,164]/255,<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%purple    %%%%%%%%%%%%%%%%%%%%</span>
+    struct(<span class="string">'color'</span>,[1,0,0],<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,1,0],<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,0,1],<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,0,0],<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span><span class="comment">%    struct('color',[1,1,0],'lineStyle','--'),...%yellow</span>
+    struct(<span class="string">'color'</span>,[1,0,1],<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span><span class="comment">%pink</span>
+    struct(<span class="string">'color'</span>,[0,1,1],<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0.5,0.5,0.5],<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span><span class="comment">%gray-25%</span>
+    struct(<span class="string">'color'</span>,[136,0,21]/255,<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span><span class="comment">%dark red</span>
+    struct(<span class="string">'color'</span>,[255,127,39]/255,<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span><span class="comment">%orange</span>
+    struct(<span class="string">'color'</span>,[0,162,232]/255,<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span><span class="comment">%Turquoise</span>
+    struct(<span class="string">'color'</span>,[163,73,164]/255,<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span><span class="comment">%purple    %%%%%%%%%%%%%%%%%%%</span>
+    struct(<span class="string">'color'</span>,[1,0,0],<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,1,0],<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,0,1],<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,0,0],<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span><span class="comment">%    struct('color',[1,1,0],'lineStyle',':'),...%yellow</span>
+    struct(<span class="string">'color'</span>,[1,0,1],<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span><span class="comment">%pink</span>
+    struct(<span class="string">'color'</span>,[0,1,1],<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0.5,0.5,0.5],<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span><span class="comment">%gray-25%</span>
+    struct(<span class="string">'color'</span>,[136,0,21]/255,<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span><span class="comment">%dark red</span>
+    struct(<span class="string">'color'</span>,[255,127,39]/255,<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span><span class="comment">%orange</span>
+    struct(<span class="string">'color'</span>,[0,162,232]/255,<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span><span class="comment">%Turquoise</span>
+    struct(<span class="string">'color'</span>,[163,73,164]/255,<span class="string">'lineStyle'</span>,<span class="string">'-.'</span>),<span class="keyword">...</span><span class="comment">%purple</span>
+    };
+
+plotDrawStyle10={   struct(<span class="string">'color'</span>,[1,0,0],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,1,0],<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,0,1],<span class="string">'lineStyle'</span>,<span class="string">':'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0,0,0],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%    struct('color',[1,1,0],'lineStyle','-'),...%yellow</span>
+    struct(<span class="string">'color'</span>,[1,0,1],<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span><span class="comment">%pink</span>
+    struct(<span class="string">'color'</span>,[0,1,1],<span class="string">'lineStyle'</span>,<span class="string">':'</span>),<span class="keyword">...</span>
+    struct(<span class="string">'color'</span>,[0.5,0.5,0.5],<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%gray-25%</span>
+    struct(<span class="string">'color'</span>,[136,0,21]/255,<span class="string">'lineStyle'</span>,<span class="string">'--'</span>),<span class="keyword">...</span><span class="comment">%dark red</span>
+    struct(<span class="string">'color'</span>,[255,127,39]/255,<span class="string">'lineStyle'</span>,<span class="string">':'</span>),<span class="keyword">...</span><span class="comment">%orange</span>
+    struct(<span class="string">'color'</span>,[0,162,232]/255,<span class="string">'lineStyle'</span>,<span class="string">'-'</span>),<span class="keyword">...</span><span class="comment">%Turquoise</span>
+    };
+
+seqs=configSeqs;
+
+trackers=configTrackers;
+
+<span class="comment">% seqs = seqs(1:10);</span>
+<span class="comment">% trackers = trackers(1:10);</span>
+
+numSeq=length(seqs);
+numTrk=length(trackers);
+
+nameTrkAll=cell(numTrk,1);
+<span class="keyword">for</span> idxTrk=1:numTrk
+    t = trackers{idxTrk};
+    nameTrkAll{idxTrk}=t.namePaper;
+<span class="keyword">end</span>
+
+nameSeqAll=cell(numSeq,1);
+numAllSeq=zeros(numSeq,1);
+
+att=[];
+<span class="keyword">for</span> idxSeq=1:numSeq
+    s = seqs{idxSeq};
+    nameSeqAll{idxSeq}=s.name;
+
+    s.len = s.endFrame - s.startFrame + 1;
+
+    numAllSeq(idxSeq) = s.len;
+
+    att(idxSeq,:)=load([attPath s.name <span class="string">'.txt'</span>]);
+<span class="keyword">end</span>
+
+attNum = size(att,2);
+
+figPath = <span class="string">'.\figs\overall\'</span>;
+
+perfMatPath = <span class="string">'.\perfMat\overall\'</span>;
+
+<span class="keyword">if</span> ~exist(figPath,<span class="string">'dir'</span>)
+    mkdir(figPath);
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> ~exist(perfMatPath,<span class="string">'dir'</span>)
+    mkdir(perfMatPath);
+<span class="keyword">end</span>
+
+metricTypeSet = {<span class="string">'error'</span>, <span class="string">'overlap'</span>};
+evalTypeSet = {<span class="string">'OPE'</span>};
+
+rankingType = <span class="string">'AUC'</span>;<span class="comment">%AUC, threshod</span>
+
+rankNum = 10;<span class="comment">%number of plots to show</span>
+
+<span class="keyword">if</span> rankNum == 10
+    plotDrawStyle=plotDrawStyle10;
+<span class="keyword">else</span>
+    plotDrawStyle=plotDrawStyleAll;
+<span class="keyword">end</span>
+
+thresholdSetOverlap = 0:0.05:1;
+thresholdSetError = 0:50;
+
+<span class="keyword">for</span> i=1:length(metricTypeSet)
+    metricType = metricTypeSet{i};<span class="comment">%error,overlap</span>
+
+    <span class="keyword">switch</span> metricType
+        <span class="keyword">case</span> <span class="string">'overlap'</span>
+            thresholdSet = thresholdSetOverlap;
+            rankIdx = 11;
+            xLabelName = <span class="string">'Overlap threshold'</span>;
+            yLabelName = <span class="string">'Success rate'</span>;
+        <span class="keyword">case</span> <span class="string">'error'</span>
+            thresholdSet = thresholdSetError;
+            rankIdx = 21;
+            xLabelName = <span class="string">'Location error threshold'</span>;
+            yLabelName = <span class="string">'Precision'</span>;
+    <span class="keyword">end</span>
+
+    <span class="keyword">if</span> strcmp(metricType,<span class="string">'error'</span>)&amp;strcmp(rankingType,<span class="string">'AUC'</span>)
+        <span class="keyword">continue</span>;
+    <span class="keyword">end</span>
+
+    tNum = length(thresholdSet);
+
+    <span class="keyword">for</span> j=1:length(evalTypeSet)
+
+        evalType = evalTypeSet{j};<span class="comment">%SRE, TRE, OPE</span>
+
+        plotType = [metricType <span class="string">'_'</span> evalType];
+
+        <span class="keyword">switch</span> metricType
+            <span class="keyword">case</span> <span class="string">'overlap'</span>
+                titleName = [<span class="string">'Success plots of '</span> evalType];
+            <span class="keyword">case</span> <span class="string">'error'</span>
+                titleName = [<span class="string">'Precision plots of '</span> evalType];
+        <span class="keyword">end</span>
+
+        dataName = [perfMatPath <span class="string">'aveSuccessRatePlot_'</span> num2str(numTrk) <span class="string">'alg_'</span>  plotType <span class="string">'.mat'</span>];
+
+        <span class="comment">% If the performance Mat file, dataName, does not exist, it will call</span>
+        <span class="comment">% genPerfMat to generate the file.</span>
+        <span class="keyword">if</span> ~exist(dataName)
+            genPerfMat(seqs, trackers, evalType, nameTrkAll, perfMatPath);
+        <span class="keyword">end</span>
+
+        load(dataName);
+        numTrk = size(aveSuccessRatePlot,1);
+
+        <span class="keyword">if</span> rankNum &gt; numTrk | rankNum &lt;0
+            rankNum = numTrk;
+        <span class="keyword">end</span>
+
+        figName= [figPath <span class="string">'quality_plot_'</span> plotType <span class="string">'_'</span> rankingType];
+        idxSeqSet = 1:length(seqs);
+
+        <span class="comment">% draw and save the overall performance plot</span>
+        plotDrawSave(numTrk,plotDrawStyle,aveSuccessRatePlot,idxSeqSet,rankNum,rankingType,rankIdx,nameTrkAll,thresholdSet,titleName, xLabelName,yLabelName,figName,metricType);
+
+        <span class="comment">% draw and save the performance plot for each attribute</span>
+        attTrld = 0;
+        <span class="keyword">for</span> attIdx=1:attNum
+
+            idxSeqSet=find(att(:,attIdx)&gt;attTrld);
+
+            <span class="keyword">if</span> length(idxSeqSet) &lt; 2
+                <span class="keyword">continue</span>;
+            <span class="keyword">end</span>
+            disp([attName{attIdx} <span class="string">' '</span> num2str(length(idxSeqSet))])
+
+            figName=[figPath attFigName{attIdx} <span class="string">'_'</span>  plotType <span class="string">'_'</span> rankingType];
+            titleName = [<span class="string">'Plots of '</span> evalType <span class="string">': '</span> attName{attIdx} <span class="string">' ('</span> num2str(length(idxSeqSet)) <span class="string">')'</span>];
+
+            <span class="keyword">switch</span> metricType
+                <span class="keyword">case</span> <span class="string">'overlap'</span>
+                    titleName = [<span class="string">'Success plots of '</span> evalType <span class="string">' - '</span> attName{attIdx} <span class="string">' ('</span> num2str(length(idxSeqSet)) <span class="string">')'</span>];
+                <span class="keyword">case</span> <span class="string">'error'</span>
+                    titleName = [<span class="string">'Precision plots of '</span> evalType <span class="string">' - '</span> attName{attIdx} <span class="string">' ('</span> num2str(length(idxSeqSet)) <span class="string">')'</span>];
+            <span class="keyword">end</span>
+
+            plotDrawSave(numTrk,plotDrawStyle,aveSuccessRatePlot,idxSeqSet,rankNum,rankingType,rankIdx,nameTrkAll,thresholdSet,titleName, xLabelName,yLabelName,figName,metricType);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">soccer CSK
+soccer Staple
+soccer DSST
+soccer KCF
+soccer Proposed
+soccer MOSSEAndCOL
+soccer samf
+soccer DSST_2
+soccer CN
+carScale CSK
+carScale Staple
+carScale DSST
+carScale KCF
+carScale Proposed
+carScale MOSSEAndCOL
+carScale samf
+carScale DSST_2
+carScale CN
+david CSK
+david Staple
+david DSST
+david KCF
+david Proposed
+david MOSSEAndCOL
+david samf
+david DSST_2
+david CN
+crossing CSK
+crossing Staple
+crossing DSST
+crossing KCF
+crossing Proposed
+crossing MOSSEAndCOL
+crossing samf
+crossing DSST_2
+crossing CN
+basketball CSK
+basketball Staple
+basketball DSST
+basketball KCF
+basketball Proposed
+basketball MOSSEAndCOL
+basketball samf
+basketball DSST_2
+basketball CN
+david3 CSK
+david3 Staple
+david3 DSST
+david3 KCF
+david3 Proposed
+david3 MOSSEAndCOL
+david3 samf
+david3 DSST_2
+david3 CN
+woman CSK
+woman Staple
+woman DSST
+woman KCF
+woman Proposed
+woman MOSSEAndCOL
+woman samf
+woman DSST_2
+woman CN
+carDark CSK
+carDark Staple
+carDark DSST
+carDark KCF
+carDark Proposed
+carDark MOSSEAndCOL
+carDark samf
+carDark DSST_2
+carDark CN
+couple CSK
+couple Staple
+couple DSST
+couple KCF
+couple Proposed
+couple MOSSEAndCOL
+couple samf
+couple DSST_2
+couple CN
+motorRolling CSK
+motorRolling Staple
+motorRolling DSST
+motorRolling KCF
+motorRolling Proposed
+motorRolling MOSSEAndCOL
+motorRolling samf
+motorRolling DSST_2
+motorRolling CN
+illumination variation 6
+out-of-plane rotation 7
+scale variation 7
+occlusion 6
+deformation 6
+motion blur 4
+fast motion 5
+in-plane rotation 4
+background clutter 7
+</pre><img vspace="5" hspace="5" src="perfPlot_01.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="perfPlot_02.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="perfPlot_03.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="perfPlot_04.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="perfPlot_05.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="perfPlot_06.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="perfPlot_07.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="perfPlot_08.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="perfPlot_09.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="perfPlot_10.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear
+close all;
+clc
+
+addpath('./util');
+
+attPath = '.\anno\att\'; % The folder that contains the annotation files for sequence attributes
+
+attName={'illumination variation'	'out-of-plane rotation'	'scale variation'	'occlusion'	'deformation'	'motion blur'	'fast motion'	'in-plane rotation'	'out of view'	'background clutter' 'low resolution'};
+
+attFigName={'illumination_variations'	'out-of-plane_rotation'	'scale_variations'	'occlusions'	'deformation'	'blur'	'abrupt_motion'	'in-plane_rotation'	'out-of-view'	'background_clutter' 'low_resolution'};
+
+
+plotDrawStyleAll={   struct('color',[1,0,0],'lineStyle','-'),...
+    struct('color',[0,1,0],'lineStyle','-'),...
+    struct('color',[0,0,1],'lineStyle','-'),...
+    struct('color',[0,0,0],'lineStyle','-'),...%    struct('color',[1,1,0],'lineStyle','-'),...%yellow
+    struct('color',[1,0,1],'lineStyle','-'),...%pink
+    struct('color',[0,1,1],'lineStyle','-'),...
+    struct('color',[0.5,0.5,0.5],'lineStyle','-'),...%gray-25%
+    struct('color',[136,0,21]/255,'lineStyle','-'),...%dark red
+    struct('color',[255,127,39]/255,'lineStyle','-'),...%orange
+    struct('color',[0,162,232]/255,'lineStyle','-'),...%Turquoise
+    struct('color',[163,73,164]/255,'lineStyle','-'),...%purple    %%%%%%%%%%%%%%%%%%%%
+    struct('color',[1,0,0],'lineStyle','REPLACE_WITH_DASH_DASH'),...
+    struct('color',[0,1,0],'lineStyle','REPLACE_WITH_DASH_DASH'),...
+    struct('color',[0,0,1],'lineStyle','REPLACE_WITH_DASH_DASH'),...
+    struct('color',[0,0,0],'lineStyle','REPLACE_WITH_DASH_DASH'),...%    struct('color',[1,1,0],'lineStyle','REPLACE_WITH_DASH_DASH'),...%yellow
+    struct('color',[1,0,1],'lineStyle','REPLACE_WITH_DASH_DASH'),...%pink
+    struct('color',[0,1,1],'lineStyle','REPLACE_WITH_DASH_DASH'),...
+    struct('color',[0.5,0.5,0.5],'lineStyle','REPLACE_WITH_DASH_DASH'),...%gray-25%
+    struct('color',[136,0,21]/255,'lineStyle','REPLACE_WITH_DASH_DASH'),...%dark red
+    struct('color',[255,127,39]/255,'lineStyle','REPLACE_WITH_DASH_DASH'),...%orange
+    struct('color',[0,162,232]/255,'lineStyle','REPLACE_WITH_DASH_DASH'),...%Turquoise
+    struct('color',[163,73,164]/255,'lineStyle','REPLACE_WITH_DASH_DASH'),...%purple    %%%%%%%%%%%%%%%%%%%
+    struct('color',[1,0,0],'lineStyle','-.'),...
+    struct('color',[0,1,0],'lineStyle','-.'),...
+    struct('color',[0,0,1],'lineStyle','-.'),...
+    struct('color',[0,0,0],'lineStyle','-.'),...%    struct('color',[1,1,0],'lineStyle',':'),...%yellow
+    struct('color',[1,0,1],'lineStyle','-.'),...%pink
+    struct('color',[0,1,1],'lineStyle','-.'),...
+    struct('color',[0.5,0.5,0.5],'lineStyle','-.'),...%gray-25%
+    struct('color',[136,0,21]/255,'lineStyle','-.'),...%dark red
+    struct('color',[255,127,39]/255,'lineStyle','-.'),...%orange
+    struct('color',[0,162,232]/255,'lineStyle','-.'),...%Turquoise
+    struct('color',[163,73,164]/255,'lineStyle','-.'),...%purple
+    };
+
+plotDrawStyle10={   struct('color',[1,0,0],'lineStyle','-'),...
+    struct('color',[0,1,0],'lineStyle','REPLACE_WITH_DASH_DASH'),...
+    struct('color',[0,0,1],'lineStyle',':'),...
+    struct('color',[0,0,0],'lineStyle','-'),...%    struct('color',[1,1,0],'lineStyle','-'),...%yellow
+    struct('color',[1,0,1],'lineStyle','REPLACE_WITH_DASH_DASH'),...%pink
+    struct('color',[0,1,1],'lineStyle',':'),...
+    struct('color',[0.5,0.5,0.5],'lineStyle','-'),...%gray-25%
+    struct('color',[136,0,21]/255,'lineStyle','REPLACE_WITH_DASH_DASH'),...%dark red
+    struct('color',[255,127,39]/255,'lineStyle',':'),...%orange
+    struct('color',[0,162,232]/255,'lineStyle','-'),...%Turquoise
+    };
+
+seqs=configSeqs;
+
+trackers=configTrackers;
+
+% seqs = seqs(1:10);
+% trackers = trackers(1:10);
+
+numSeq=length(seqs);
+numTrk=length(trackers);
+
+nameTrkAll=cell(numTrk,1);
+for idxTrk=1:numTrk
+    t = trackers{idxTrk};
+    nameTrkAll{idxTrk}=t.namePaper;
+end
+
+nameSeqAll=cell(numSeq,1);
+numAllSeq=zeros(numSeq,1);
+
+att=[];
+for idxSeq=1:numSeq
+    s = seqs{idxSeq};
+    nameSeqAll{idxSeq}=s.name;
+    
+    s.len = s.endFrame - s.startFrame + 1;
+    
+    numAllSeq(idxSeq) = s.len;
+    
+    att(idxSeq,:)=load([attPath s.name '.txt']);
+end
+
+attNum = size(att,2);
+
+figPath = '.\figs\overall\';
+
+perfMatPath = '.\perfMat\overall\';
+
+if ~exist(figPath,'dir')
+    mkdir(figPath);
+end
+
+if ~exist(perfMatPath,'dir')
+    mkdir(perfMatPath);
+end
+
+metricTypeSet = {'error', 'overlap'};
+evalTypeSet = {'OPE'};
+
+rankingType = 'AUC';%AUC, threshod
+
+rankNum = 10;%number of plots to show
+
+if rankNum == 10
+    plotDrawStyle=plotDrawStyle10;
+else
+    plotDrawStyle=plotDrawStyleAll;
+end
+
+thresholdSetOverlap = 0:0.05:1;
+thresholdSetError = 0:50;
+
+for i=1:length(metricTypeSet)
+    metricType = metricTypeSet{i};%error,overlap
+    
+    switch metricType
+        case 'overlap'
+            thresholdSet = thresholdSetOverlap;
+            rankIdx = 11;
+            xLabelName = 'Overlap threshold';
+            yLabelName = 'Success rate';
+        case 'error'
+            thresholdSet = thresholdSetError;
+            rankIdx = 21;
+            xLabelName = 'Location error threshold';
+            yLabelName = 'Precision';
+    end  
+        
+    if strcmp(metricType,'error')&strcmp(rankingType,'AUC')
+        continue;
+    end
+    
+    tNum = length(thresholdSet);
+    
+    for j=1:length(evalTypeSet)
+        
+        evalType = evalTypeSet{j};%SRE, TRE, OPE
+        
+        plotType = [metricType '_' evalType];
+        
+        switch metricType
+            case 'overlap'
+                titleName = ['Success plots of ' evalType];
+            case 'error'
+                titleName = ['Precision plots of ' evalType];
+        end
+
+        dataName = [perfMatPath 'aveSuccessRatePlot_' num2str(numTrk) 'alg_'  plotType '.mat'];
+        
+        % If the performance Mat file, dataName, does not exist, it will call
+        % genPerfMat to generate the file.
+        if ~exist(dataName)
+            genPerfMat(seqs, trackers, evalType, nameTrkAll, perfMatPath);
+        end        
+        
+        load(dataName);
+        numTrk = size(aveSuccessRatePlot,1);        
+        
+        if rankNum > numTrk | rankNum <0
+            rankNum = numTrk;
+        end
+        
+        figName= [figPath 'quality_plot_' plotType '_' rankingType];
+        idxSeqSet = 1:length(seqs);
+        
+        % draw and save the overall performance plot
+        plotDrawSave(numTrk,plotDrawStyle,aveSuccessRatePlot,idxSeqSet,rankNum,rankingType,rankIdx,nameTrkAll,thresholdSet,titleName, xLabelName,yLabelName,figName,metricType);
+        
+        % draw and save the performance plot for each attribute
+        attTrld = 0;
+        for attIdx=1:attNum
+            
+            idxSeqSet=find(att(:,attIdx)>attTrld);
+            
+            if length(idxSeqSet) < 2
+                continue;
+            end
+            disp([attName{attIdx} ' ' num2str(length(idxSeqSet))])
+            
+            figName=[figPath attFigName{attIdx} '_'  plotType '_' rankingType];
+            titleName = ['Plots of ' evalType ': ' attName{attIdx} ' (' num2str(length(idxSeqSet)) ')'];
+            
+            switch metricType
+                case 'overlap'
+                    titleName = ['Success plots of ' evalType ' - ' attName{attIdx} ' (' num2str(length(idxSeqSet)) ')'];
+                case 'error'
+                    titleName = ['Precision plots of ' evalType ' - ' attName{attIdx} ' (' num2str(length(idxSeqSet)) ')'];
+            end
+            
+            plotDrawSave(numTrk,plotDrawStyle,aveSuccessRatePlot,idxSeqSet,rankNum,rankingType,rankIdx,nameTrkAll,thresholdSet,titleName, xLabelName,yLabelName,figName,metricType);
+        end        
+    end
+end
+
+##### SOURCE END #####
+--></body></html>
